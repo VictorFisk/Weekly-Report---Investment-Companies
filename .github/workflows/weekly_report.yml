@@ -1,0 +1,31 @@
+name: Weekly Investment Report
+ 
+on:
+  schedule:
+    # Runs at 10:00 UTC every Monday = 12:00 Swedish summer time (CEST, UTC+2)
+    # In winter (CET, UTC+1) this will arrive at 11:00 — adjust to "0 11 * * 1" Oct–Mar if preferred
+    - cron: "0 10 * * 1"
+ 
+  # Allow manual trigger from GitHub Actions tab (useful for testing)
+  workflow_dispatch:
+ 
+jobs:
+  send-report:
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+ 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+ 
+      - name: Send weekly report email
+        env:
+          GMAIL_USER:       ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASS:   ${{ secrets.GMAIL_APP_PASS }}
+          RECIPIENT_EMAIL:  ${{ secrets.RECIPIENT_EMAIL }}
+        run: python send_report.py
+ 
